@@ -15,8 +15,21 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/client', 'ClientController@index');
-Route::post('/client', 'ClientController@store');
-Route::get('/client/{id}', 'ClientController@show');
-Route::delete('/client/{id}', 'ClientController@destroy');
-Route::put('/client/{id}', 'ClientController@update');
+Route::group(['prefix'=>'client'], function(){
+    Route::get('/',         ['as'=>'client.index',   'uses'=>'ClientController@index']);
+    Route::get('/{id}',     ['as'=>'client.show',    'uses'=>'ProjectController@client']);
+    Route::post('/',        ['as'=>'client.store',   'uses'=>'ClientController@store']);
+    Route::put('/{id}',     ['as'=>'client.update',  'uses'=>'ClientController@update']);
+    Route::delete('/{id}',  ['as'=>'client.destroy', 'uses'=>'ClientController@destroy']);
+});
+
+
+Route::group(['prefix'=>'project'], function(){
+    Route::get('/',         ['as'=>'project.index',   'uses'=>'ProjectController@index']);
+    Route::get('/{id}',     ['as'=>'project.show',    'uses'=>'ProjectController@show']);
+    Route::post('/',        ['as'=>'project.store',   'uses'=>'ProjectController@store']);
+    Route::put('/{id}',     ['as'=>'project.update',  'uses'=>'ProjectController@update']);
+    Route::delete('/{id}',  ['as'=>'project.destroy', 'uses'=>'ProjectController@destroy']);
+});
+
+
