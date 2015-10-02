@@ -14,7 +14,17 @@ class DatabaseSeeder extends Seeder
     {
         Model::unguard();
 
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        CodeProject\Entities\Project::truncate();
+        CodeProject\Entities\Client::truncate();
+        CodeProject\Entities\User::truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
         $this->call(ClientTableSeeder::class);
+        $this->call(UserTableSeeder::class);
+        $this->call(ProjectTableSeeder::class);
+        //$this->call(ProjectNoteTableSeeder::class);
+
 
         Model::reguard();
     }
