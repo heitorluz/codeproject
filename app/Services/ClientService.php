@@ -9,6 +9,7 @@
 namespace CodeProject\Services;
 
 
+use CodeProject\Exceptions\ServiceException;
 use CodeProject\Repositories\ClientRepository;
 use CodeProject\Validators\ClientValidator;
 use Prettus\Validator\Exceptions\ValidatorException;
@@ -36,7 +37,11 @@ class ClientService
     }
 
     public function find($id){
-        return $this->repository->find($id);
+        try{
+            return $this->repository->find($id);
+        }catch (\Exception $e) {
+            throw new ServiceException("Registro não localizado");
+        }
     }
 
     public function create(array $data){
@@ -46,18 +51,28 @@ class ClientService
             $this->validator->with($data)->passesOrFail();
             return $this->repository->create($data);
         }catch (ValidatorException $e){
-            return [
-                'error' => true,
-                'message' => $e->getMessageBag()
-            ];
+            throw new ServiceException($e->getMessageBag());
         }
     }
 
     public function update(array $data, $id){
-        return $this->repository->update($data, $id);
+
+        try
+        {
+            return $this->repository->update($data, $id);
+        }catch (ValidatorException $e) {
+            throw new ServiceException($e->getMessageBag());
+        }catch (\Exception $e) {
+            throw new ServiceException($e->getMessage());
+        }
     }
 
     public function delete($id){
-        $this->repository->delete($id);
+        try {
+            $this->repository->delete($id);
+            return ['message'=>'Registro excluído com sucesso'];
+        }catch (\Exception $e){
+            throw new ServiceException($e->getMessage());
+        }
     }
 }

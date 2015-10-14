@@ -17,7 +17,7 @@ Route::get('/', function () {
 
 Route::group(['prefix'=>'client'], function(){
     Route::get('/',         ['as'=>'client.index',   'uses'=>'ClientController@index']);
-    Route::get('/{id}',     ['as'=>'client.show',    'uses'=>'ProjectController@client']);
+    Route::get('/{id}',     ['as'=>'client.show',    'uses'=>'ClientController@show']);
     Route::post('/',        ['as'=>'client.store',   'uses'=>'ClientController@store']);
     Route::put('/{id}',     ['as'=>'client.update',  'uses'=>'ClientController@update']);
     Route::delete('/{id}',  ['as'=>'client.destroy', 'uses'=>'ClientController@destroy']);

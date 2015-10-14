@@ -2,9 +2,11 @@
 
 namespace CodeProject\Http\Controllers;
 
+use CodeProject\Exceptions\ServiceException;
 use CodeProject\Repositories\ClientRepository;
 use CodeProject\Services\ClientService;
 use Illuminate\Http\Request;
+
 
 class ClientController extends Controller
 {
@@ -37,7 +39,11 @@ class ClientController extends Controller
      */
     public function store(Request $request)
     {
-        return $this->service->create($request->all());
+        try {
+            return $this->service->create($request->all());
+        }catch (ServiceException $e){
+            return ['error'=>true, 'message'=>$e->getMessage()];
+        }
     }
 
     /**
@@ -48,7 +54,11 @@ class ClientController extends Controller
      */
     public function show($id)
     {
-        return $this->service->find($id);
+        try {
+            return $this->service->find($id);
+        }catch (ServiceException $e){
+            return ['error'=>true, 'message'=>$e->getMessage()];
+        }
     }
 
     /**
@@ -60,7 +70,11 @@ class ClientController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->service->find($id)->update($request->all());
+        try {
+            return $this->service->update($request->all(), $id);
+        }catch(ServiceException $e){
+            return ['error'=>true, 'message'=>$e->getMessage()];
+        }
     }
 
     /**
@@ -71,6 +85,10 @@ class ClientController extends Controller
      */
     public function destroy($id)
     {
-        $this->service->delete($id);
+        try {
+            return $this->service->delete($id);
+        }catch(ServiceException $e){
+            return ['error'=>true, 'message'=>$e->getMessage()];
+        }
     }
 }

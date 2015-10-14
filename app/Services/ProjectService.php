@@ -11,6 +11,7 @@ namespace CodeProject\Services;
 
 use CodeProject\Repositories\ProjectRepository;
 use CodeProject\Validators\ProjectValidator;
+use Mockery\CountValidator\Exception;
 use Prettus\Validator\Exceptions\ValidatorException;
 
 class ProjectService
@@ -36,7 +37,12 @@ class ProjectService
     }
 
     public function find($id){
-        return $this->repository->with(['owner', 'client'])->find($id);
+
+        try{
+            return $this->repository->with(['owner', 'client'])->findOrFail($id);
+        }catch (Exception $e) {
+            return ['message'=>'Registro não localizado.'];
+        }
     }
 
     public function create(array $data){
