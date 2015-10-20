@@ -38,6 +38,8 @@ Route::group(['prefix'=>'project'], function(){
     Route::put('/{id}/task/{taskId}',     ['as'=>'project.update',  'uses'=>'ProjectTaskController@update']);
     Route::delete('/{id}/task/{taskId}',  ['as'=>'project.destroy', 'uses'=>'ProjectTaskController@destroy']);
 
+    Route::get('/{id}/members',           ['as'=>'project.members', 'uses'=>'ProjectController@members']);
+
     Route::get('/',         ['as'=>'project.index',   'uses'=>'ProjectController@index']);
     Route::get('/{id}',     ['as'=>'project.show',    'uses'=>'ProjectController@show']);
     Route::post('/',        ['as'=>'project.store',   'uses'=>'ProjectController@store']);
