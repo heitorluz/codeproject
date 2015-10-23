@@ -11,13 +11,13 @@ namespace CodeProject\Http\Controllers;
 use CodeProject\Exceptions\ServiceException;
 use Illuminate\Http\Request;
 
+
 abstract class AbstractController extends Controller
 {
     /**
      * @var
      */
     protected $service;
-
 
     /**
      * Display a listing of the resource.
