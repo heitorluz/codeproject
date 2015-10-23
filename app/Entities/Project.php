@@ -3,9 +3,13 @@
 namespace CodeProject\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Prettus\Repository\Contracts\Presentable;
+use Prettus\Repository\Traits\PresentableTrait;
 
-class Project extends Model
+class Project extends Model implements Presentable
 {
+    use PresentableTrait;
+
     protected $fillable = ['owner_id', 'client_id', 'name', 'description', 'progress', 'status', 'due_date'];
 
     public function owner(){

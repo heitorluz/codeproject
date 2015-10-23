@@ -9,8 +9,11 @@
 namespace CodeProject\Services;
 
 
+use CodeProject\Entities\Project;
 use CodeProject\Entities\User;
 use CodeProject\Exceptions\ServiceException;
+use CodeProject\Presenters\ProjectDevPresenter;
+use CodeProject\Presenters\ProjectPresenter;
 use CodeProject\Repositories\ProjectRepository;
 use CodeProject\Validators\ProjectValidator;
 
@@ -31,7 +34,9 @@ class ProjectService extends AbstractService
         $this->checkProjectPermissions($id);
 
         try{
-            return $this->repository->with(['owner', 'client'])->find($id);
+            $project = $this->repository->with(['owner', 'client'])->find($id);
+
+            return $this->presenter($project);
         }catch (\Exception $e) {
             throw new ServiceException("Registro não localizado");
          }
@@ -130,7 +135,7 @@ class ProjectService extends AbstractService
             $userId = \Authorizer::getResourceOwnerId();
         }
 
-        if($this->isOwner($projectId, $userId) == true or $this->hasMember($projectId, $userId) == true){
+        if($this->isOwner($projectId, $userId) == false and $this->hasMember($projectId, $userId) == false){
             throw new ServiceException("Access Forbidden");
         }
     }
@@ -141,5 +146,11 @@ class ProjectService extends AbstractService
         }catch (\Exception $e){
             throw new ServiceException($e->getMessage());
         }
+    }
+
+    public function presenter(Project $project){
+        $project->setPresenter(new ProjectPresenter());
+
+        return $project->presenter();
     }
 }
