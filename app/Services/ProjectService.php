@@ -10,43 +10,66 @@ namespace CodeProject\Services;
 
 
 use CodeProject\Entities\Project;
+use CodeProject\Entities\ProjectFile;
 use CodeProject\Entities\User;
 use CodeProject\Exceptions\ServiceException;
-use CodeProject\Presenters\ProjectDevPresenter;
-use CodeProject\Presenters\ProjectPresenter;
 use CodeProject\Repositories\ProjectRepository;
+use CodeProject\Transformers\ProjectMemberTransformer;
+use CodeProject\Transformers\ProjectTransformer;
 use CodeProject\Validators\ProjectValidator;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Contracts\Filesystem\Factory as Storage;
 
 class ProjectService extends AbstractService
 {
 
-    public function __construct(ProjectRepository $repository, ProjectValidator $validator){
+    /**
+     * @var Filesystem
+     */
+    private $filesystem;
+    /**
+     * @var Storage
+     */
+    private $storage;
+
+    public function __construct(
+        ProjectRepository $repository,
+        ProjectValidator $validator,
+        Filesystem $filesystem,
+        Storage $storage,
+        ProjectTransformer $transformer,
+        Project $entity
+    ){
         $this->repository = $repository;
         $this->validator  = $validator;
+        $this->filesystem = $filesystem;
+        $this->storage = $storage;
+        $this->transformer = $transformer;
+        $this->entity = $entity;
     }
 
-    public function all($userId=null){
-        return $this->repository->with(['owner', 'client'])->all();
+    public function all(){
+        $userId = \Authorizer::getResourceOwnerId();
+
+        try{
+            return $this->transformer->transformCollection($this->repository->findWhere(['owner_id'=>$userId]));
+        }catch (\Exception $e){
+            throw new ServiceException($e->getMessage());
+        }
     }
 
     public function find($id){
-
         $this->checkProjectPermissions($id);
-
-        try{
-            $project = $this->repository->with(['owner', 'client'])->find($id);
-
-            return $this->presenter($project);
-        }catch (\Exception $e) {
-            throw new ServiceException("Registro não localizado");
-         }
+        return parent::find($id);
     }
 
     public function members($id){
         $this->checkProjectPermissions($id);
 
+        $projectMemberTransformer = new ProjectMemberTransformer();
+
         try{
-            return $this->repository->find($id)->members;
+            return $projectMemberTransformer->transformCollection($this->repository->find($id)->members);
         }catch (\Exception $e) {
             throw new ServiceException("Usuários do projeto não localizados");
         }
@@ -148,9 +171,43 @@ class ProjectService extends AbstractService
         }
     }
 
-    public function presenter(Project $project){
-        $project->setPresenter(new ProjectPresenter());
+    public function createFile(array $data){
 
-        return $project->presenter();
+        try {
+            $project = $this->repository->find($data['project_id']);
+            $project->files()->create($data);
+        }catch (\Exception $e){
+            throw new ServiceException('Não foi possível gravar o arquivo no banco de dados.');
+        }
+
+        try{
+            $this->storage->put($data['name'] . "." . $data['extension'], $this->filesystem->get($data['file']));
+
+            return ['message'=>'File upload successfully'];
+        }catch (\Exception $e){
+            throw new ServiceException($e->getMessage());
+        }
+    }
+
+    public function deleteFile($id,$name){
+        try {
+            $project = $this->repository->find($id);
+            foreach($project->files as $file){
+                if($file->name == $name){
+                    $file->delete();
+                }
+            }
+        }catch (\Exception $e){
+            throw new ServiceException('Não foi possível gravar o arquivo no banco de dados.');
+        }
+
+        try{
+            $this->storage->delete($name);
+
+            return ['message'=>'File delete successfully'];
+        }catch (\Exception $e){
+            throw new ServiceException($e->getMessage());
+        }
+
     }
 }

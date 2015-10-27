@@ -2,9 +2,7 @@
 
 namespace CodeProject\Entities;
 
-use Illuminate\Database\Eloquent\Model;
-
-class Client extends Model
+class Client extends AbstractEntity
 {
     protected $fillable = array('name', 'responsible', 'email', 'phone', 'address', 'obs');
 

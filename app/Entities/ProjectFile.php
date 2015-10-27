@@ -2,12 +2,11 @@
 
 namespace CodeProject\Entities;
 
-class ProjectNote extends AbstractEntity
+class ProjectFile extends AbstractEntity
 {
-    protected $fillable = ['project_id','title','note'];
+    protected $fillable = ['project_id', 'name', 'description', 'extension'];
 
     public function project(){
         return $this->belongsTo(Project::class);
     }
-
 }

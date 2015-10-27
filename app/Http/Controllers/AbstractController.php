@@ -26,7 +26,11 @@ abstract class AbstractController extends Controller
      */
     public function index()
     {
-        return $this->service->all();
+        try {
+            return $this->service->all();
+        }catch (ServiceException $e){
+            return ['error'=>true, 'message'=>$e->getMessage()];
+        }
     }
 
     /**

@@ -9,21 +9,25 @@
 namespace CodeProject\Services;
 
 
+use CodeProject\Entities\ProjectTask;
 use CodeProject\Exceptions\ServiceException;
 use CodeProject\Repositories\ProjectTaskRepository;
+use CodeProject\Transformers\ProjectTaskTransformer;
 use CodeProject\Validators\ProjectTaskValidator;
 
 class ProjectTaskService extends AbstractService
 {
 
-    public function __construct(ProjectTaskRepository $repository, ProjectTaskValidator $validator){
+    public function __construct(ProjectTaskRepository $repository, ProjectTaskValidator $validator, ProjectTaskTransformer $transformer, ProjectTask $entity){
         $this->repository = $repository;
         $this->validator  = $validator;
+        $this->transformer = $transformer;
+        $this->entity = $entity;
     }
 
     public function all($projectId=null){
         try{
-            return $this->repository->findWhere(['project_id'=>$projectId]);
+            return $this->transformer->transformCollection($this->repository->findWhere(['project_id'=>$projectId]));
         }catch (\Exception $e) {
             throw new ServiceException("Registro não localizado");
         }
@@ -32,12 +36,12 @@ class ProjectTaskService extends AbstractService
     public function find($project_id=null,$id=null){
 
         try{
-            $task = $this->repository->find($id);
+            $task = $this->transformer->transformObject($this->repository->find($id));
         }catch (\Exception $e) {
             throw new ServiceException("Registro não localizado");
         }
 
-        if($task->project->id != $project_id){
+        if($task['project_id'] != $project_id){
             throw new ServiceException("A tarefa pedida não faz parte do projeto");
         }
 

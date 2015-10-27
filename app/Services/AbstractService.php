@@ -8,21 +8,31 @@
 
 namespace CodeProject\Services;
 
+use CodeProject\Entities\AbstractEntity;
 use CodeProject\Exceptions\ServiceException;
+use CodeProject\Transformers\AbstractTransformer;
+use CodeProject\Transformers\ProjectTransformer;
+use Illuminate\Database\Eloquent\Collection;
 use Prettus\Validator\Exceptions\ValidatorException;
 
 class AbstractService
 {
     protected $repository;
     protected $validator;
+    protected $transformer;
+    protected $entity;
 
     public function all(){
-        return $this->repository->all();
+        try {
+            return $this->transformer->transformCollection($this->repository->all());
+        }catch (\Exception $e){
+            throw new ServiceException("Não foi possível carregar os dados");
+        }
     }
 
     public function find($id){
         try{
-            return $this->repository->find($id);
+            return $this->transformer->transformObject($this->repository->find($id));
         }catch (\Exception $e) {
             throw new ServiceException("Registro não localizado");
         }

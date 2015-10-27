@@ -9,29 +9,33 @@
 namespace CodeProject\Services;
 
 
+use CodeProject\Entities\ProjectNote;
 use CodeProject\Exceptions\ServiceException;
 use CodeProject\Repositories\ProjectNoteRepository;
+use CodeProject\Transformers\ProjectNoteTransformer;
 use CodeProject\Validators\ProjectNoteValidator;
 
 class ProjectNoteService extends AbstractService
 {
 
-    public function __construct(ProjectNoteRepository $repository, ProjectNoteValidator $validator){
+    public function __construct(ProjectNoteRepository $repository, ProjectNoteValidator $validator, ProjectNoteTransformer $transformer, ProjectNote $entity){
         $this->repository = $repository;
         $this->validator  = $validator;
+        $this->transformer = $transformer;
+        $this->entity = $entity;
     }
 
     public function all($projectId=null){
         try{
-            return $this->repository->findWhere(['project_id'=>$projectId]);
+            return $this->transformer->transformCollection($this->repository->findWhere(['project_id'=>$projectId]));
         }catch (\Exception $e) {
-            throw new ServiceException("Registro não localizado");
+            throw new ServiceException($e->getMessage());
         }
     }
 
     public function find($project_id=null,$id=null){
         try{
-            $note = $this->repository->find($id);
+            return $this->transformer->transformObject($this->repository->find($id));
         }catch (\Exception $e) {
             throw new ServiceException("Registro não localizado");
         }

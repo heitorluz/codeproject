@@ -11,5 +11,4 @@ namespace CodeProject\Exceptions;
 
 class ServiceException extends \Exception
 {
-
 }

@@ -9,11 +9,11 @@
 namespace CodeProject\Presenters;
 
 
-use CodeProject\Transformers\ProjectTransformer;
+use CodeProject\Transformers\ClientTransformer;
 
-class ProjectPresenter extends AbstractPresenter
+class ClientPresenter extends AbstractPresenter
 {
     public function getTransformer(){
-        return new ProjectTransformer();
+        return new ClientTransformer();
     }
 }

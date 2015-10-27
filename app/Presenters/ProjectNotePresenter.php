@@ -8,12 +8,11 @@
 
 namespace CodeProject\Presenters;
 
+use CodeProject\Transformers\ProjectNoteTransformer;
 
-use CodeProject\Transformers\ProjectTransformer;
-
-class ProjectPresenter extends AbstractPresenter
+class ProjectNotePresenter extends AbstractPresenter
 {
     public function getTransformer(){
-        return new ProjectTransformer();
+        return new ProjectNoteTransformer();
     }
 }
