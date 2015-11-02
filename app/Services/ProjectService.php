@@ -177,7 +177,8 @@ class ProjectService extends AbstractService
             $project = $this->repository->find($data['project_id']);
             $project->files()->create($data);
         }catch (\Exception $e){
-            throw new ServiceException('Não foi possível gravar o arquivo no banco de dados.');
+            //throw new ServiceException('Não foi possível gravar o arquivo no banco de dados.');
+            throw new ServiceException($e->getMessage());
         }
 
         try{

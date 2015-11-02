@@ -15,12 +15,20 @@ class ProjectFileController extends AbstractController
 
     public function store(Request $request, $id=null){
 
+        $file = $request->file('file');
+
+        if($file == ""){
+            return ['error'=>true, 'message'=>"Não foi possível identificar o arquivo."];
+        }    
+
         try {
-            $file = $request->file('file');
+
             $extension = $file->getClientOriginalExtension();
 
+            $name = ($request->name != "") ? $request->name : $file->getClientOriginalName();
+
             $data['file'] = $file;
-            $data['name'] = $request->name;
+            $data['name'] = $name;
             $data['extension'] = $extension;
             $data['project_id'] = $id;
 
