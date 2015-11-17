@@ -20,7 +20,6 @@ class AbstractTransformer extends TransformerAbstract
     }
 
     public function transformCollection(Collection $collection){
-
         $result = array();
 
         foreach($collection as $entity){
